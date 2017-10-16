@@ -1,3 +1,5 @@
+const issueResults = document.querySelector('#results')
+
 const issues = [
   {
     "body": "Instructions say GET /team and POST /newteam. Rspec wants GET/newteam and POST/team.",
@@ -9000,3 +9002,63 @@ const issues = [
     "url": "https://api.github.com/repos/learn-co-curriculum/js-donut-lab/issues/2"
   }
 ];
+
+const issuesWithUpdatedApiUrl = issues.map(x => {
+  return Object.assign({}, x, {
+    url: replaceUrl(x.url)
+    })
+  })
+
+function replaceUrl(url){
+  return url.replace(/api.github.com/, 'api-v2.github.com')
+}
+
+const commentCountArray = issues.map(x => {
+  return x.comments_count;
+})
+
+const commentCountAcrossIssues = commentCountArray.reduce((acc, num) => {
+  return num + acc
+})
+
+const openIssues = issues.filter(function(x){
+  return x.state === "open"
+})
+
+const nonAutomaticIssues = openIssues.filter(function(x){
+  return x.body !== "This pull request has been automatically created by learn.co."
+})
+
+const markedUp = nonAutomaticIssues.map(x => {
+  return Object.assign({}, x, {
+    body: `<td>${x.body}</td>`,
+    created_at: `<td>${x.created_at}</td>`,
+    state: `<td>${x.state}</td>`
+  })
+})
+
+function displayTable(markedUp) {
+  const table = document.querySelector('#results');
+
+  for (let i = 0; i < markedUp.length; ++i) {
+    let issue = markedUp[i];
+
+    let row = document.createElement('tr');
+
+    let properties = ['body', 'created_at', 'state'];
+
+    // append each one of them to the row in question, in order
+    for (let j = 0; j < properties.length; ++j) {
+
+      let cell = document.createElement('td');
+
+      cell.innerHTML = issue[properties[j]];
+
+      row.appendChild(cell);
+    }
+
+    table.appendChild(row);
+  }
+}
+
+displayTable(markedUp)
